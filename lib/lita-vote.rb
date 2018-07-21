@@ -10,3 +10,5 @@ Lita::Handlers::Vote.template_root File.expand_path(
   File.join("..", "..", "templates"),
  __FILE__
 )
+
+require "mongo"
