@@ -2,26 +2,20 @@ module Lita
   module Handlers
     class Vote < Handler
 
-      config :db_address, type: String, default: '127.0.0.1:27017'
+      config :mongodb_address, type: String, default: '127.0.0.1:27017'
+      config :mongodb_password, type: String, default: ''
+      config :mongodb_user, type: String, default: ''
       
       def initialize(robot)
         super
         
-        @db = Mongo::Client.new([ config.db_address ], :database => 'votes')
+        @db = Mongo::Client.new([ config.db_address ], 
+          :database => 'votes',
+          :user => config.mongodb_user,
+          :password => config.mongodb_password
+          )
         @collection = @db[:polls]
       end
-
-      # route(/^test/i, command: true, help: {
-      #         'tally' => "Let's the user get the results of the current vote. Usage: /tally"
-      #       }) do |response|
-      #   log.info(response.message.inspect)
-      #   log.info(response.user.inspect)
-      #   log.info(response.room.inspect)
-        
-      #   after(10) { |timer| 
-      #     response.reply("Timer works!!")
-      #   }
-      # end
 
       route(/^poll\s+(.+)/i, command: true, help: {
               'poll' => "Let's the user call a new poll for everyone to vote on. Usage: /poll 'Is Ian an idiot?' - yes or no"
