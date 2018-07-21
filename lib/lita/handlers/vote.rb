@@ -139,7 +139,12 @@ module Lita
             else
               poll['voters'][user_choice] << response.user.name
               poll['update_at'] = Time.now
-              @collection.update_one({:poll_id => poll_id.to_i, :room => response.room.id}, {'$set' => {:voters => poll['voters']}})
+              @collection.update_one({:poll_id => poll_id.to_i, :room => response.room.id}, {
+                '$set' => {
+                  :voters => poll['voters'],
+                  :updated_at => Time.now
+                  }
+                })
               response.reply('Counted!')
             end
           else
