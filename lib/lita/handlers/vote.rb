@@ -10,11 +10,7 @@ module Lita
       def initialize(robot)
         super
         
-        @db = Mongo::Client.new([ config.db_address ], 
-          :database => config.mongodb_database,
-          :user => config.mongodb_user,
-          :password => config.mongodb_password
-          )
+        @db = Mongo::Client.new("mongodb://#{config.mongodb_user}:#{config.mongodb_password}@#{config.mongodb_address}/#{config.mongodb_database}")
         @collection = @db[:polls]
       end
 
