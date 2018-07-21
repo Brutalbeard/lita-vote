@@ -5,12 +5,13 @@ module Lita
       config :mongodb_address, type: String, default: '127.0.0.1:27017'
       config :mongodb_password, type: String, default: ''
       config :mongodb_user, type: String, default: ''
+      config :mongodb_database, type: String, default: 'votes'
       
       def initialize(robot)
         super
         
         @db = Mongo::Client.new([ config.db_address ], 
-          :database => 'votes',
+          :database => mongodb_database,
           :user => config.mongodb_user,
           :password => config.mongodb_password
           )
