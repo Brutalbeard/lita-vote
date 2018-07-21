@@ -48,7 +48,13 @@ module Lita
               'tally' => "Let's the user get the results a poll by ID. Usage: /tally 1"
             }) do |response|
 
-        @collection.find({:poll_id => response.matches[0][0].to_i, :room => response.room.id}).each do |vote|
+        @collection.find({
+          poll_id: response.matches[0][0].to_i, 
+          room: response.room.id, 
+          created_at: {
+            '$gte' => Time.at(Time.now.to_i - 86400)
+          }
+        }).each do |vote|
 
           reply = ''
 
@@ -93,7 +99,14 @@ module Lita
               'endpoll' => "Let's the user kill the current poll!. Usage: /endpoll"
             }) do |response|
 
-        @collection.delete_one({:poll_id => response.matches[0][0].to_i, :room => response.room.id, :initiator => response.user.name})
+        @collection.delete_one({
+          poll_id: response.matches[0][0].to_i, 
+          room: response.room.id, 
+          initiator: response.user.name, 
+          created_at: {
+            '$gte' => Time.at(Time.now.to_i - 86400)
+          }
+        })
 
         response.reply('All gone!')
       end
@@ -131,7 +144,13 @@ module Lita
 
       def handle_vote(user_choice, response, poll_id)
 
-        @collection.find({:poll_id => poll_id.to_i, :room => response.room.id}).each do |poll|
+        @collection.find({
+            poll_id: poll_id.to_i, 
+            room: response.room.id, 
+            created_at: {
+              '$gte' => Time.at(Time.now.to_i - 86400)
+            }
+          }).each do |poll|
 
           if poll['choices'].include?(user_choice)
             if poll['voters'][user_choice].include?(response.user.name)
@@ -157,7 +176,12 @@ module Lita
       def load_polls(response)
         polls = []
 
-        @collection.find({room: response.room.id}).each do |document|
+        @collection.find({
+          room: response.room.id,
+          created_at: {
+              '$gte' => Time.at(Time.now.to_i - 86400)
+            },
+          }).each do |document|
           polls.push(document)
         end
 
