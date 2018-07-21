@@ -11,7 +11,7 @@ module Lita
         super
         
         @db = Mongo::Client.new([ config.db_address ], 
-          :database => mongodb_database,
+          :database => config.mongodb_database,
           :user => config.mongodb_user,
           :password => config.mongodb_password
           )
