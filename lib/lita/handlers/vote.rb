@@ -11,17 +11,17 @@ module Lita
         @collection = @db[:polls]
       end
 
-      route(/^test/i, command: true, help: {
-              'tally' => "Let's the user get the results of the current vote. Usage: /tally"
-            }) do |response|
-        log.info(response.message.inspect)
-        log.info(response.user.inspect)
-        log.info(response.room.inspect)
+      # route(/^test/i, command: true, help: {
+      #         'tally' => "Let's the user get the results of the current vote. Usage: /tally"
+      #       }) do |response|
+      #   log.info(response.message.inspect)
+      #   log.info(response.user.inspect)
+      #   log.info(response.room.inspect)
         
-        after(10) { |timer| 
-          response.reply("Timer works!!")
-        }
-      end
+      #   after(10) { |timer| 
+      #     response.reply("Timer works!!")
+      #   }
+      # end
 
       route(/^poll\s+(.+)/i, command: true, help: {
               'poll' => "Let's the user call a new poll for everyone to vote on. Usage: /poll 'Is Ian an idiot?' - yes or no"
@@ -38,7 +38,7 @@ module Lita
       end
 
       route(/^vote\s+(.+)/i, command: true, help: {
-              'vote' => "Let's the user vote on a poll question!. Usage: /vote yes"
+              'vote' => "Let's the user vote on a specific poll question by ID. Usage: /vote 1 yes"
             }) do |response|
 
         info = response.matches[0][0].split(' ')
@@ -50,7 +50,7 @@ module Lita
       end
 
       route(/^tally\s+(.+)/i, command: true, help: {
-              'tally' => "Let's the user get the results of the current vote. Usage: /tally"
+              'tally' => "Let's the user get the results a poll by ID. Usage: /tally 1"
             }) do |response|
 
         @collection.find({:poll_id => response.matches[0][0].to_i, :room => response.room.id}).each do |vote|
@@ -73,7 +73,7 @@ module Lita
       end
 
       route(/^polls/i, command: true, help: {
-              'tally' => "Let's the user get the results of the current vote. Usage: /tally"
+              'tally' => "Let's the user get the list of current polls and their options. Usage: /polls"
             }) do |response|
 
         votes = load_polls(response)
