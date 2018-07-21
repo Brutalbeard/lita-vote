@@ -10,7 +10,7 @@ module Lita
       def initialize(robot)
         super
         
-        @db = Mongo::Client.new([ config.db_address ], 
+        @db = Mongo::Client.new([ config.mongodb_address ], 
           :database => config.mongodb_database,
           :user => config.mongodb_user,
           :password => config.mongodb_password
@@ -51,7 +51,7 @@ module Lita
         @collection.find({:poll_id => response.matches[0][0].to_i, :room => response.room.id}).each do |vote|
 
           reply = ''
-            response.reply(vote)
+
             reply.concat("**" << vote['question'] << "**\n\n")
 
 
@@ -74,12 +74,16 @@ module Lita
         votes = load_polls(response)
         reply = ''
 
+        if(votes.length == 0)
+          reply << 'No current polls'
+        end
+
         votes.each do |vote|
           log.info(vote)
           reply << "ID: " << vote['poll_id'].to_s << ' - '
           reply << "\"" << vote['question'] << "\" || "
           reply << 'Called by: ' << vote['initiator'] << ' || '
-          reply << 'Options: ' << vote['choices'].to_s
+          reply << 'Options: ' << vote['choices'].to_s << "\n"
         end
 
         response.reply(reply)
